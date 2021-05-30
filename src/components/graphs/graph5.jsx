@@ -1,107 +1,84 @@
 import React, { Component } from "react";
-import { Line as LineChart } from "react-chartjs-2";
+import firebase from '../../config';
+import { Doughnut as LineChart } from "react-chartjs-2";
 import { defaults } from "react-chartjs-2";
-const data = {
-  labels: ["January", "February", "March", "April", "May", "June", "July"],
-  datasets: [
-    {
-      label: "Voltage",
-      ill: true,
-      background:
-        "linear-gradient(180deg, rgba(238,7,7,1) 0%, rgba(255,111,111,0) 96%)",
-      lineTension: 0.1,
-      borderColor: "#835ae2",
-      borderCapStyle: "butt",
-      borderDash: [],
-      borderDashOffset: 0.0,
-      borderWidth: 3,
-      borderJoinStyle: "miter",
-      pointBorderColor: "#835ae2",
-      pointBackgroundColor: "#fff",
-      pointBorderWidth: 5,
-      pointHoverRadius: 5,
-      pointHoverBackgroundColor: "rgba(75,192,192,1)",
-      pointHoverBorderColor: "rgba(220,220,220,1)",
-      pointHoverBorderWidth: 2,
-      pointRadius: 1,
-      pointHitRadius: 10,
-      data: [65, 59, 80, 81, 56, 55, 40],
-    },
-  ],
-};
+export default class Graph4 extends Component {
 
-const lineChartOptions = {
-  legend: {
-    labels: {
-      fontColor: "#b3bbc9",
-      fontSize: 12
+    constructor(props) {
+        super(props);
+        this.state = {voltage : 0};
+        
     }
-  },
-  datasetStrokeWidth: 3,
-  pointDotStrokeWidth: 4,
-  responsive: true,
-  maintainAspectRatio: false,
-  tooltips: {
-    enabled: true,
-  },
-  title: {
-    display: true,
-    text: "Voltage",
-    fontColor: "white",
-  },
-  scales: {
-    xAxes: [
-      {
-        display: true,
-        gridLines: {
-          display: false,
-          zeroLineColor: "transparent",
-        },
-        ticks: {
-          fontColor: "#5F6E89",
-          autoSkip: true,
-          maxTicksLimit: 20,
-          padding: 20,
-          stepSize: 1,
-        },
-      },
-    ],
-    yAxes: [
-      {
-        gridLines: {
-          display: false,
-          drawTicks: false,
-        },
-        display: true,
-        ticks: {
-          fontColor: "#5F6E89",
-          autoSkip: true,
-          maxTicksLimit: 5,
-          padding: 20,
-          // forces step size to be 5 units
-          stepSize: 1,
-        },
-      },
-    ],
-  },
-};
-export default class Graph5 extends Component {
-  render() {
-    return (
-      <div>
-        <LineChart
-          ref="chart"
-          width={100}
-          height={350}
-          data={data}
-          options={lineChartOptions}
-        />
-      </div>
-    );
-  }
+    componentDidMount() {
+        const { datasets } = this.refs.chart.chartInstance.data;
+        console.log(datasets[0].data);
+        firebase.database().ref("Sensor").on("value", snapshot => {
+            let sensorData = [];
+            snapshot.forEach(snap => {
+                sensorData.push(snap.val());
+            });
+            this.setState({ sensorData: sensorData, voltage: sensorData[2] });
+          });
+     }
 
-  componentDidMount() {
-    const { datasets } = this.refs.chart.chartInstance.data;
-    console.log(datasets[0].data);
-  }
+    render() {
+        const data = {
+            labels: [
+                "Voltage"
+            ],
+            datasets: [
+                {
+                    data: [this.state.voltage, 5-this.state.voltage],
+                    backgroundColor: [
+                        "#835ae2",
+                        "#1c202c"
+                    ],
+                    hoverBackgroundColor: [
+                        "#835ae2",
+                        "#1c202c"
+                    ],
+                    borderWidth: [
+                        0, 0
+                    ],
+                }]
+        };
+        
+        const lineChartOptions = {
+            cutoutPercentage: 70,
+            legend: {
+                labels: {
+                    fontColor: "#b3bbc9",
+                    fontSize: 12
+                }
+            },
+            animation: {
+                animationRotate: true,
+                duration: 2000
+            },
+            datasetStrokeWidth: 3,
+            pointDotStrokeWidth: 4,
+            responsive: true,
+            maintainAspectRatio: false,
+            tooltips: {
+                enabled: true,
+            },
+            title: {
+                display: true,
+                text: "Voltage",
+                fontColor: "white",
+            },
+        };
+        return (
+            <div>
+                <LineChart
+                    ref="chart"
+                    width={100}
+                    height={350}
+                    data={data}
+                    options={lineChartOptions}
+                />
+            </div>
+        );
+    }
+    
 }

@@ -27,3 +27,24 @@
   left: 130px;
   position: absolute;
 }
+
+.wattageIcon{
+  font-size: 90px;
+  top: 170px;
+  left: 148px;
+  position: absolute;
+}
+
+.currentIcon{
+  font-size: 90px;
+  top: 170px;
+  left: 180px;
+  position: absolute;
+}
+
+.voltageIcon{
+  font-size: 90px;
+  top: 170px;
+  left: 160px;
+  position: absolute;
+}

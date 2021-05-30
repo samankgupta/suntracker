@@ -7,7 +7,7 @@ const data = {
     ],
     datasets: [
         {
-            data: [85, 15],
+            data: [37, 60],
             backgroundColor: [
                 "#ffe64a",
                 "#1c202c"
